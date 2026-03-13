@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Porcentajes Online — Gratis y al Instante</title>
+<meta name="description" content="Calculá porcentajes al instante. ¿Cuánto es el 15% de 8500? ¿Qué porcentaje es X de Y? ¿Cuánto aumentó o bajó? Todos los modos en un solo lugar. Sin registro.">
+<meta name="keywords" content="calculadora de porcentajes, calcular porcentaje, porcentaje de un numero, cuanto es el porcentaje, calculadora descuento, porcentaje online">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --border2: #2e2e2e;
+    --text: #f0f0ee;
+    --muted: #666;
+    --muted2: #999;
+    --accent: #ff6b35;
+    --accent2: #ff8c5a;
+    --accent-dim: rgba(255,107,53,0.1);
+    --accent-dim2: rgba(255,107,53,0.05);
+    --green: #4ade80;
+    --red: #f87171;
+    --font: 'Syne', sans-serif;
+    --mono: 'Fira Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+  }
+  .logo-tag {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .hero {
+    padding: 52px 24px 36px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+  }
+  .hero h1 .accent { color: var(--accent); }
+  .hero p { color: var(--muted2); font-size: 0.95rem; max-width: 480px; }
+
+  /* MODO TABS */
+  .mode-tabs {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-bottom: -1px;
+  }
+  .mode-tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 10px 18px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--accent);
+    background: var(--surface);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+  }
+
+  /* TOOL AREA */
+  .tool-outer {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+  }
+  .tool-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 12px 12px 12px;
+    padding: 28px;
+  }
+
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+
+  .mode-desc {
+    font-size: 13px;
+    color: var(--muted2);
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mode-desc strong { color: var(--accent); font-weight: 500; }
+
+  /* INPUTS */
+  .fields { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+  }
+  @media (max-width: 500px) {
+    .field-row { grid-template-columns: 1fr; }
+    .field-sep { display: none; }
+  }
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
+  .field-label { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--mono); }
+  .field-sep { font-size: 18px; color: var(--muted); text-align: center; font-weight: 700; }
+
+  input[type=number] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type=number]:focus { border-color: var(--accent); }
+  input[type=number]::placeholder { color: var(--border2); }
+
+  .single-field { max-width: 100%; }
+
+  /* RESULTADO */
+  .result-box {
+    background: var(--accent-dim);
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 4px;
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .result-main {
+    font-family: var(--mono);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .result-label {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-top: 4px;
+  }
+  .result-empty {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .result-copy {
+    font-size: 12px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .result-copy:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* VARIACIÓN (sube/baja) */
+  .variation-up { color: var(--green); }
+  .variation-down { color: var(--red); }
+
+  /* EJEMPLOS RÁPIDOS */
+  .quick-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .quick-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; font-family: var(--mono); }
+  .quick-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .quick-pill {
+    font-size: 12px;
+    padding: 5px 12px;
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    color: var(--muted2);
+    background: none;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.15s;
+  }
+  .quick-pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim2); }
+
+  /* SEO */
+  .seo-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+    border-top: 1px solid var(--border);
+  }
+  .seo-section h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; }
+  .seo-section h3 { font-size: 1rem; font-weight: 600; color: var(--accent2); margin: 22px 0 6px; }
+  .seo-section p { color: var(--muted2); font-size: 0.9rem; line-height: 1.8; margin-bottom: 6px; }
+  .formula-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent2);
+    margin: 8px 0 12px;
+  }
+  .faq-item { margin-bottom: 14px; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">% calculadora</span>
+  <span class="logo-tag">porcentajes · online · gratis</span>
+</header>
+
+<section class="hero">
+  <h1>Calculá<br><span class="accent">porcentajes</span><br>al instante</h1>
+  <p>Todos los modos en un solo lugar. Sin fórmulas, sin calculadora, sin registro.</p>
+</section>
+
+<!-- TABS -->
+<div class="mode-tabs">
+  <button class="tab active" onclick="setMode(0)">% de un número</button>
+  <button class="tab" onclick="setMode(1)">X es qué % de Y</button>
+  <button class="tab" onclick="setMode(2)">Variación %</button>
+  <button class="tab" onclick="setMode(3)">Agregar / quitar %</button>
+  <button class="tab" onclick="setMode(4)">Descuento</button>
+</div>
+
+<div class="tool-outer">
+<div class="tool-card">
+
+  <!-- MODO 0: X% de Y -->
+  <div class="mode-panel active" id="panel-0">
+    <div class="mode-desc">¿Cuánto es el <strong>X%</strong> de un número? Ideal para propinas, comisiones, impuestos.</div>
+    <div class="fields">
+      <div class="field-row">
+        <div class="field-group">
+          <span class="field-label">Porcentaje (%)</span>
+          <input type="number" id="m0-pct" placeholder="15" min="0" oninput="calc0()">
+        </div>
+        <span class="field-sep">de</span>
+        <div class="field-group">
+          <span class="field-label">Número base</span>
+          <input type="number" id="m0-base" placeholder="8500" oninput="calc0()">
+        </div>
+      </div>
+    </div>
+    <div class="result-box" id="res-0">
+      <span class="result-empty">Ingresá los valores arriba</span>
+    </div>
+    <div class="quick-section">
+      <div class="quick-title">Ejemplos rápidos</div>
+      <div class="quick-pills">
+        <button class="quick-pill" onclick="fillM0(10,1000)">10% de 1.000</button>
+        <button class="quick-pill" onclick="fillM0(15,8500)">15% de 8.500</button>
+        <button class="quick-pill" onclick="fillM0(21,50000)">IVA 21% de 50.000</button>
+        <button class="quick-pill" onclick="fillM0(30,120000)">30% de 120.000</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODO 1: X es qué % de Y -->
+  <div class="mode-panel" id="panel-1">
+    <div class="mode-desc"><strong>X</strong> es qué porcentaje de <strong>Y</strong>? Para calificar notas, participación, rendimiento.</div>
+    <div class="fields">
+      <div class="field-row">
+        <div class="field-group">
+          <span class="field-label">Número (X)</span>
+          <input type="number" id="m1-x" placeholder="35" oninput="calc1()">
+        </div>
+        <span class="field-sep">de</span>
+        <div class="field-group">
+          <span class="field-label">Total (Y)</span>
+          <input type="number" id="m1-y" placeholder="200" oninput="calc1()">
+        </div>
+      </div>
+    </div>
+    <div class="result-box" id="res-1">
+      <span class="result-empty">Ingresá los valores arriba</span>
+    </div>
+    <div class="quick-section">
+      <div class="quick-title">Ejemplos rápidos</div>
+      <div class="quick-pills">
+        <button class="quick-pill" onclick="fillM1(35,200)">35 de 200</button>
+        <button class="quick-pill" onclick="fillM1(7,10)">7 de 10 (nota)</button>
+        <button class="quick-pill" onclick="fillM1(450,1800)">450 de 1.800</button>
+        <button class="quick-pill" onclick="fillM1(1,3)">1 de 3</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODO 2: Variación % -->
+  <div class="mode-panel" id="panel-2">
+    <div class="mode-desc">¿En cuánto <strong>subió o bajó</strong> un valor? Para precios, sueldos, ventas.</div>
+    <div class="fields">
+      <div class="field-row">
+        <div class="field-group">
+          <span class="field-label">Valor original</span>
+          <input type="number" id="m2-orig" placeholder="1000" oninput="calc2()">
+        </div>
+        <span class="field-sep">→</span>
+        <div class="field-group">
+          <span class="field-label">Valor nuevo</span>
+          <input type="number" id="m2-new" placeholder="1250" oninput="calc2()">
+        </div>
+      </div>
+    </div>
+    <div class="result-box" id="res-2">
+      <span class="result-empty">Ingresá los valores arriba</span>
+    </div>
+    <div class="quick-section">
+      <div class="quick-title">Ejemplos rápidos</div>
+      <div class="quick-pills">
+        <button class="quick-pill" onclick="fillM2(1000,1250)">1.000 → 1.250</button>
+        <button class="quick-pill" onclick="fillM2(500,380)">Bajó de 500 a 380</button>
+        <button class="quick-pill" onclick="fillM2(80000,112000)">Sueldo 80k → 112k</button>
+        <button class="quick-pill" onclick="fillM2(250,250)">Sin cambio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODO 3: Agregar/quitar % -->
+  <div class="mode-panel" id="panel-3">
+    <div class="mode-desc">Sumá o restá un porcentaje a un número. Para calcular precios con <strong>IVA</strong>, inflación o descuentos directos.</div>
+    <div class="fields">
+      <div class="field-group">
+        <span class="field-label">Número base</span>
+        <input type="number" id="m3-base" placeholder="50000" oninput="calc3()">
+      </div>
+      <div class="field-row" style="margin-top:0">
+        <div class="field-group">
+          <span class="field-label">Porcentaje a sumar (%)</span>
+          <input type="number" id="m3-add" placeholder="21" min="0" oninput="calc3()">
+        </div>
+        <span class="field-sep">/</span>
+        <div class="field-group">
+          <span class="field-label">Porcentaje a restar (%)</span>
+          <input type="number" id="m3-sub" placeholder="10" min="0" oninput="calc3()">
+        </div>
+      </div>
+    </div>
+    <div class="result-box" id="res-3">
+      <span class="result-empty">Ingresá los valores arriba</span>
+    </div>
+    <div class="quick-section">
+      <div class="quick-title">Ejemplos rápidos</div>
+      <div class="quick-pills">
+        <button class="quick-pill" onclick="fillM3(50000,21,0)">50.000 + IVA 21%</button>
+        <button class="quick-pill" onclick="fillM3(100000,0,15)">100.000 − 15%</button>
+        <button class="quick-pill" onclick="fillM3(200000,118,0)">200k + inflación 118%</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODO 4: Descuento -->
+  <div class="mode-panel" id="panel-4">
+    <div class="mode-desc">¿Cuánto pagás después de un <strong>descuento</strong>? Ideal para ofertas, cupones y rebajas.</div>
+    <div class="fields">
+      <div class="field-row">
+        <div class="field-group">
+          <span class="field-label">Precio original</span>
+          <input type="number" id="m4-price" placeholder="25000" oninput="calc4()">
+        </div>
+        <span class="field-sep">−</span>
+        <div class="field-group">
+          <span class="field-label">Descuento (%)</span>
+          <input type="number" id="m4-disc" placeholder="30" min="0" max="100" oninput="calc4()">
+        </div>
+      </div>
+    </div>
+    <div class="result-box" id="res-4">
+      <span class="result-empty">Ingresá los valores arriba</span>
+    </div>
+    <div class="quick-section">
+      <div class="quick-title">Ejemplos rápidos</div>
+      <div class="quick-pills">
+        <button class="quick-pill" onclick="fillM4(25000,30)">$25.000 − 30%</button>
+        <button class="quick-pill" onclick="fillM4(89999,50)">$89.999 − 50%</button>
+        <button class="quick-pill" onclick="fillM4(15000,20)">$15.000 − 20%</button>
+        <button class="quick-pill" onclick="fillM4(120000,55)">$120.000 − 55%</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tool-card -->
+</div><!-- /tool-outer -->
+
+<!-- SEO -->
+<section class="seo-section">
+  <h2>Calculadora de porcentajes — todos los modos</h2>
+  <p>Esta calculadora resuelve al instante cualquier operación con porcentajes. No necesitás recordar fórmulas ni usar papel. Escribís los valores y el resultado aparece solo.</p>
+
+  <h3>Las fórmulas detrás de cada cálculo</h3>
+  <div class="formula-box">X% de Y = (X × Y) / 100</div>
+  <div class="formula-box">X es qué % de Y = (X / Y) × 100</div>
+  <div class="formula-box">Variación % = ((nuevo − original) / original) × 100</div>
+  <div class="formula-box">Precio con descuento = precio × (1 − descuento/100)</div>
+
+  <h3>¿Para qué se usa cada modo?</h3>
+  <p><strong style="color:var(--accent2)">% de un número:</strong> propinas en restaurantes, comisiones de venta, cálculo de impuestos, intereses.</p>
+  <p><strong style="color:var(--accent2)">X es qué % de Y:</strong> notas escolares, porcentaje de votos, rendimiento deportivo, participación de mercado.</p>
+  <p><strong style="color:var(--accent2)">Variación %:</strong> cuánto subió el dólar, cuánto aumentó tu sueldo, variación de precios.</p>
+  <p><strong style="color:var(--accent2)">Agregar/quitar %:</strong> precio con IVA, precio sin IVA, inflación acumulada.</p>
+  <p><strong style="color:var(--accent2)">Descuento:</strong> ofertas del Hot Sale, cupones de descuento, rebajas de temporada.</p>
+
+  <div class="faq-item">
+    <h3>¿Cómo se calcula el porcentaje de descuento?</h3>
+    <p>Si un producto cuesta $25.000 y tiene 30% de descuento, el cálculo es: 25.000 × 0,70 = $17.500. También podés calcular el ahorro: 25.000 × 0,30 = $7.500 de descuento.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>¿Cómo calculo el IVA de un precio?</h3>
+    <p>En Argentina el IVA general es del 21%. Si un precio es $50.000 sin IVA, con IVA sería: 50.000 × 1,21 = $60.500. Si querés saber el precio sin IVA desde el precio final: 60.500 / 1,21 = $50.000.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>¿Cómo sé si un precio subió o bajó más que la inflación?</h3>
+    <p>Usá el modo "Variación %". Ingresás el precio anterior y el precio actual. Si el resultado es mayor que la inflación del período, el precio subió más que la inflación. Si es menor, el precio bajó en términos reales.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>¿Por qué el resultado de quitar y volver a poner un porcentaje no es el mismo número?</h3>
+    <p>Porque los porcentajes se calculan sobre bases distintas. Si a 100 le quitás 10% obtenés 90. Pero si a 90 le sumás 10% obtenés 99, no 100. Esto es matemáticamente correcto y no es un error de la calculadora.</p>
+  </div>
+</section>
+
+<footer>© 2026 · Calculadora de porcentajes · Gratis · Sin registro · Sin servidores</footer>
+
+<script>
+const tabs = document.querySelectorAll('.tab');
+const panels = document.querySelectorAll('.mode-panel');
+
+function setMode(i) {
+  tabs.forEach((t, idx) => t.classList.toggle('active', idx === i));
+  panels.forEach((p, idx) => p.classList.toggle('active', idx === i));
+}
+
+function fmt(n) {
+  return n.toLocaleString('es-AR', { maximumFractionDigits: 2 });
+}
+
+function showResult(id, main, label, extra) {
+  const box = document.getElementById(id);
+  box.innerHTML = `
+    <div>
+      <div class="result-main ${extra || ''}">${main}</div>
+      <div class="result-label">${label}</div>
+    </div>
+    <button class="result-copy" onclick="copyResult('${main.replace(/'/g,"\\'")}')">Copiar</button>
+  `;
+}
+
+function showEmpty(id) {
+  document.getElementById(id).innerHTML = '<span class="result-empty">Ingresá los valores arriba</span>';
+}
+
+function copyResult(val) {
+  const clean = val.replace(/[^0-9.,\-]/g, '');
+  navigator.clipboard.writeText(clean);
+}
+
+// MODO 0: X% de Y
+function calc0() {
+  const pct  = parseFloat(document.getElementById('m0-pct').value);
+  const base = parseFloat(document.getElementById('m0-base').value);
+  if (isNaN(pct) || isNaN(base)) { showEmpty('res-0'); return; }
+  const result = (pct * base) / 100;
+  showResult('res-0', fmt(result), `${fmt(pct)}% de ${fmt(base)}`);
+}
+function fillM0(pct, base) {
+  document.getElementById('m0-pct').value = pct;
+  document.getElementById('m0-base').value = base;
+  calc0();
+}
+
+// MODO 1: X es qué % de Y
+function calc1() {
+  const x = parseFloat(document.getElementById('m1-x').value);
+  const y = parseFloat(document.getElementById('m1-y').value);
+  if (isNaN(x) || isNaN(y) || y === 0) { showEmpty('res-1'); return; }
+  const result = (x / y) * 100;
+  showResult('res-1', fmt(result) + '%', `${fmt(x)} es el ${fmt(result)}% de ${fmt(y)}`);
+}
+function fillM1(x, y) {
+  document.getElementById('m1-x').value = x;
+  document.getElementById('m1-y').value = y;
+  calc1();
+}
+
+// MODO 2: Variación %
+function calc2() {
+  const orig = parseFloat(document.getElementById('m2-orig').value);
+  const nv   = parseFloat(document.getElementById('m2-new').value);
+  if (isNaN(orig) || isNaN(nv) || orig === 0) { showEmpty('res-2'); return; }
+  const result = ((nv - orig) / orig) * 100;
+  const diff = nv - orig;
+  const up = result >= 0;
+  const sign = up ? '+' : '';
+  const cls = up ? 'variation-up' : 'variation-down';
+  const arrow = up ? '▲' : '▼';
+  showResult('res-2',
+    `${sign}${fmt(result)}%`,
+    `${arrow} ${up ? 'Subió' : 'Bajó'} ${fmt(Math.abs(diff))} (de ${fmt(orig)} a ${fmt(nv)})`,
+    cls
+  );
+}
+function fillM2(orig, nv) {
+  document.getElementById('m2-orig').value = orig;
+  document.getElementById('m2-new').value = nv;
+  calc2();
+}
+
+// MODO 3: Agregar/quitar %
+function calc3() {
+  const base = parseFloat(document.getElementById('m3-base').value);
+  const add  = parseFloat(document.getElementById('m3-add').value) || 0;
+  const sub  = parseFloat(document.getElementById('m3-sub').value) || 0;
+  if (isNaN(base)) { showEmpty('res-3'); return; }
+  const withAdd = base * (1 + add / 100);
+  const withSub = base * (1 - sub / 100);
+  const box = document.getElementById('res-3');
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;width:100%">';
+  if (add > 0) html += `<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--muted2)">+${fmt(add)}% → <span style="color:var(--green)">${fmt(withAdd)}</span></span><span style="font-size:12px;color:var(--muted)">sumás ${fmt(withAdd - base)}</span></div>`;
+  if (sub > 0) html += `<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--muted2)">−${fmt(sub)}% → <span style="color:var(--red)">${fmt(withSub)}</span></span><span style="font-size:12px;color:var(--muted)">restás ${fmt(base - withSub)}</span></div>`;
+  if (add === 0 && sub === 0) { showEmpty('res-3'); return; }
+  html += '</div>';
+  box.innerHTML = html;
+}
+function fillM3(base, add, sub) {
+  document.getElementById('m3-base').value = base;
+  document.getElementById('m3-add').value  = add || '';
+  document.getElementById('m3-sub').value  = sub || '';
+  calc3();
+}
+
+// MODO 4: Descuento
+function calc4() {
+  const price = parseFloat(document.getElementById('m4-price').value);
+  const disc  = parseFloat(document.getElementById('m4-disc').value);
+  if (isNaN(price) || isNaN(disc)) { showEmpty('res-4'); return; }
+  if (disc < 0 || disc > 100) { showEmpty('res-4'); return; }
+  const final  = price * (1 - disc / 100);
+  const saving = price - final;
+  const box = document.getElementById('res-4');
+  box.innerHTML = `
+    <div>
+      <div class="result-main">${fmt(final)}</div>
+      <div class="result-label">Precio final con ${fmt(disc)}% de descuento · Ahorrás ${fmt(saving)}</div>
+    </div>
+    <button class="result-copy" onclick="copyResult('${fmt(final)}')">Copiar</button>
+  `;
+}
+function fillM4(price, disc) {
+  document.getElementById('m4-price').value = price;
+  document.getElementById('m4-disc').value  = disc;
+  calc4();
+}
+</script>
+</body>
+</html>
